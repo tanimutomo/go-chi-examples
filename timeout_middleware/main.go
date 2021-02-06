@@ -16,7 +16,7 @@ func main() {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(2500 * time.Millisecond))
+	r.Use(middleware.Timeout(3500 * time.Millisecond))
 	r.Use(timeoutHandleMiddleware)
 
 	r.Get("/", handler)
@@ -25,12 +25,19 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("  [Handler] start")
+	begin := time.Now()
+
 	opt := usecase.RandomSleep(
 		usecase.Input{
 			Name: "Gopher",
 		},
 	)
 	w.Write([]byte(opt.Greeting))
+
+	end := time.Now()
+	fmt.Println("  [Handler] end")
+	fmt.Println("  [Handler] duration: ", end.Sub(begin).Seconds())
 }
 
 func timeoutHandleMiddleware(next http.Handler) http.Handler {
@@ -44,7 +51,6 @@ func timeoutHandleMiddleware(next http.Handler) http.Handler {
 		select {
 		case <-r.Context().Done():
 			fmt.Println("timeout")
-			return
 		case <-done:
 			fmt.Println("processed")
 		}
