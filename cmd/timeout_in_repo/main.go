@@ -31,7 +31,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(prefix, "start")
 	begin := time.Now()
 
-	opt, err := usecase.RandomSleepInDB(
+	opt, err := usecase.GetGreeting(
 		r.Context(),
 		usecase.Input{
 			Name: "Gopher",

@@ -10,23 +10,22 @@ import (
 
 const prefix = "      [Repository] "
 
-func DoSomethingWithRandomSleep(ctx context.Context) error {
-	done := make(chan int)
+func GetGreetingWord(ctx context.Context) (string, error) {
+	word := make(chan string)
 	go func() {
-		doSomethingWithRandomSleep(ctx)
-		done <- 1
+		word <- getGreetingWord(ctx)
 	}()
 
 	select {
 	case <-ctx.Done():
 		fmt.Println(prefix, "timeout")
-		return errors.New("Timeout")
-	case <-done:
-		return nil
+		return "", errors.New("Timeout")
+	case word := <-word:
+		return word, nil
 	}
 }
 
-func doSomethingWithRandomSleep(ctx context.Context) {
+func getGreetingWord(ctx context.Context) string {
 	defer func() {
 		if ctx.Err() == context.DeadlineExceeded {
 			fmt.Println(prefix, "rollback")
@@ -47,4 +46,6 @@ func doSomethingWithRandomSleep(ctx context.Context) {
 	end := time.Now()
 	fmt.Println(prefix, "end")
 	fmt.Println(prefix, "duration: ", end.Sub(begin).Seconds())
+
+	return "Hi"
 }

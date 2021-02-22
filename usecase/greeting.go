@@ -8,11 +8,11 @@ import (
 	"github.com/tanimutomo/go-chi-examples/repository"
 )
 
-func RandomSleepInDB(ctx context.Context, ipt Input) (Output, error) {
+func GetGreeting(ctx context.Context, ipt Input) (Output, error) {
 	fmt.Println(prefix, "start")
 	begin := time.Now()
 
-	err := repository.DoSomethingWithRandomSleep(ctx)
+	greeting, err := repository.GetGreetingWord(ctx)
 	if err != nil {
 		return Output{}, err
 	}
@@ -22,6 +22,6 @@ func RandomSleepInDB(ctx context.Context, ipt Input) (Output, error) {
 	fmt.Println(prefix, "duration: ", end.Sub(begin).Seconds())
 
 	return Output{
-		Greeting: fmt.Sprintf("Hi, %s", ipt.Name),
+		Greeting: fmt.Sprintf("%s, %s", greeting, ipt.Name),
 	}, nil
 }
